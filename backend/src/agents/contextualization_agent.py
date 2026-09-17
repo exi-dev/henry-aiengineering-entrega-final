@@ -8,7 +8,8 @@ from functools import lru_cache
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from langfuse.decorators import langfuse_context, observe
+from langfuse import observe
+from langfuse.langchain import CallbackHandler
 
 _SYSTEM_PROMPT = (
     "Eres un agente de contextualizacion legal. Tu unica tarea es identificar "
@@ -40,8 +41,7 @@ def _get_chain():
 @observe(name="contextualization_agent")
 def build_context_map(original_text: str, amendment_text: str) -> str:
     """Return a structural/context map only (no change extraction)."""
-    handler = langfuse_context.get_current_langchain_handler()
-    config = {"callbacks": [handler]} if handler else {}
+    config = {"callbacks": [CallbackHandler()]}
     response = _get_chain().invoke(
         {"original_text": original_text, "amendment_text": amendment_text},
         config=config,

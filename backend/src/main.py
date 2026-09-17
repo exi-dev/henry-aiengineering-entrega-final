@@ -4,7 +4,7 @@ import logging
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from langfuse.decorators import observe
+from langfuse import observe
 
 from src.agents.contextualization_agent import build_context_map
 from src.agents.extraction_agent import extract_changes

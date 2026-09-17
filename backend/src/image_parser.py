@@ -10,7 +10,7 @@ from io import BytesIO
 from pathlib import Path
 
 import pymupdf
-from langfuse.decorators import observe
+from langfuse import observe
 from langfuse.openai import OpenAI
 from PIL import Image, UnidentifiedImageError
 

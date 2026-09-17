@@ -8,7 +8,8 @@ from functools import lru_cache
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from langfuse.decorators import langfuse_context, observe
+from langfuse import observe
+from langfuse.langchain import CallbackHandler
 
 from src.models import ContractChangeOutput
 
@@ -47,8 +48,7 @@ def extract_changes(
     context_map: str, original_text: str, amendment_text: str
 ) -> ContractChangeOutput:
     """Return the validated ContractChangeOutput for the detected changes."""
-    handler = langfuse_context.get_current_langchain_handler()
-    config = {"callbacks": [handler]} if handler else {}
+    config = {"callbacks": [CallbackHandler()]}
     result = _get_chain().invoke(
         {
             "context_map": context_map,
