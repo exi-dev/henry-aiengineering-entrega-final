@@ -7,7 +7,7 @@ Implemented repo (not greenfield). Source of truth: `docs/` + `README.md` + `sdd
 - `backend/src/main.py` — FastAPI entrypoint, `POST /api/compare`. Run from `backend/` (imports are `src.*`).
 - `backend/src/image_parser.py` — `parse_contract_image()` (validate → base64 → GPT-4o Vision).
 - `backend/src/agents/contextualization_agent.py` — `build_context_map()`; `extraction_agent.py` — `extract_changes()`.
-- `backend/src/models.py` — `ContractChangeOutput`. Fixtures: `backend/data/test_contracts/` (`original.jpg/.pdf`, `amendment.jpg/.pdf`).
+- `backend/src/models.py` — `ContractChangeOutput`. Fixtures: `backend/data/test_contracts/` (`documento_{1,2,3}__{original,enmienda}.jpg`, JPG-only).
 - `frontend/src/pages/index.astro` — single view (Astro + `@astrojs/tailwind`, vanilla JS).
 
 ## Commands
@@ -18,7 +18,7 @@ uvicorn src.main:app --reload --port 8000 --env-file .env   # must run from back
 cd frontend && npm install && npm run dev   # Astro default http://localhost:4321
 ```
 
-No tests, lint, typecheck, or CI. Validation is manual per `sdd/.../quickstart.md` (form → loading → results → reset → corrupt-file `alert()` → multi-page PDF check). No `backend/.env.example` exists despite quickstart referencing it — required keys are `OPENAI_API_KEY` + Langfuse keys; never commit `backend/.env`.
+No tests, lint, typecheck, or CI. Prereqs per quickstart: Python 3.11+, Node LTS. Validation is manual per `sdd/.../quickstart.md` (form → loading → results → reset → corrupt-file `alert()` → multi-page PDF check). `backend/.env.example` lists the required keys (`OPENAI_API_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_HOST`); never commit `backend/.env` (gitignored). The SDK reads `LANGFUSE_HOST`, not `LANGFUSE_BASE_URL` — a wrong name silently falls back to the default host and drops traces even though `auth_check()` still passes.
 
 ## Backend pipeline — strict order, keep roles separate
 
@@ -27,7 +27,7 @@ No tests, lint, typecheck, or CI. Validation is manual per `sdd/.../quickstart.m
 3. `extract_changes(context_map, original_text, amendment_text)` → additions/deletions/modifications via `with_structured_output(ContractChangeOutput)` + `model_validate()`.
 4. `main.py`: `compare_contracts` → `_validate_output()`; `ValueError` → 400 `{detail}`, any other exception → 500, missing field → FastAPI automatic 422.
 
-LangChain chains built lazily in `_get_chain()` (`lru_cache`) so import/app start works without `OPENAI_API_KEY`; don't move LLM construction to module top level. Observability via `@observe` spans + `langfuse_context.get_current_langchain_handler()`.
+LangChain chains built lazily in `_get_chain()` (`lru_cache`) so import/app start works without `OPENAI_API_KEY`; don't move LLM construction to module top level. Observability via `@observe` spans + `langfuse.langchain.CallbackHandler` passed as invoke `callbacks`.
 
 ## API contract — exact names (`docs/api-contract.md`)
 

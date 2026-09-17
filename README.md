@@ -94,9 +94,20 @@ La interfaz construida en **Astro** (`index.astro`) funciona con tres estados vi
 cd backend
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # completar OPENAI_API_KEY y credenciales de Langfuse
+cp .env.example .env   # completar las variables (ver abajo)
 uvicorn src.main:app --reload --port 8000 --env-file .env
 ```
+
+Variables requeridas en `backend/.env`:
+
+| Variable | Descripción |
+| --- | --- |
+| `OPENAI_API_KEY` | API key de OpenAI (GPT-4o Vision + extracción estructurada). |
+| `LANGFUSE_SECRET_KEY` | Secret key del proyecto de Langfuse. |
+| `LANGFUSE_PUBLIC_KEY` | Public key del proyecto de Langfuse. |
+| `LANGFUSE_HOST` | Host de la región de tu proyecto Langfuse (ej. `https://us.cloud.langfuse.com` o `https://cloud.langfuse.com`). El SDK **no** lee `LANGFUSE_BASE_URL`; si esta variable falta o tiene otro nombre, el cliente cae al host por defecto y las trazas se pierden silenciosamente aunque `auth_check()` sea válido. |
+
+> ⚠️ `backend/.env` nunca debe commitearse (ya está en `.gitignore`).
 
 ### Frontend
 
