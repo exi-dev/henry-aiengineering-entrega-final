@@ -107,7 +107,6 @@ Variables requeridas en `backend/.env`:
 | `LANGFUSE_PUBLIC_KEY` | Public key del proyecto de Langfuse. |
 | `LANGFUSE_HOST` | Host de la región de tu proyecto Langfuse (ej. `https://us.cloud.langfuse.com` o `https://cloud.langfuse.com`). El SDK **no** lee `LANGFUSE_BASE_URL`; si esta variable falta o tiene otro nombre, el cliente cae al host por defecto y las trazas se pierden silenciosamente aunque `auth_check()` sea válido. |
 
-> ⚠️ `backend/.env` nunca debe commitearse (ya está en `.gitignore`).
 
 ### Frontend
 
